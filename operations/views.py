@@ -1,6 +1,18 @@
 from django.shortcuts import render
 from django.views.generic import View
 from django import forms
+from geopy.geocoders import Nominatim
+ 
+def get_address(place):
+    loc = Nominatim(user_agent="GetLoc")
+    getLoc = loc.geocode(place)
+    return getLoc.address
+
+def get_location(latitude,longitude):
+    loc = Nominatim(user_agent="GetLoc")
+    Loca=loc.reverse(latitude,longitude)
+    return Loca.address
+
 
 class OperationForm(forms.Form):
     num1=forms.IntegerField()
@@ -16,6 +28,44 @@ class RegistrationForm(forms.Form):
     username=forms.CharField()
     email=forms.EmailField()
     password=forms.CharField()
+
+
+class GeoForm(forms.Form):
+    place=forms.CharField()
+
+
+class GeoView(View):
+    def get(self,request,*args,**kw):
+        form=GeoForm()
+        return render(request,"geo.html",{"form":form})
+    def post(self,request,*args,**kw):
+        form=GeoForm(request.POST)
+        if form.is_valid():
+            print(form.cleaned_data)
+            place=form.cleaned_data.get("place")
+            address=get_address(place)
+            print(address)
+
+        return render(request,"geo.html",{"form":form,"address":address})
+    
+class GeolocationForm(forms.Form):
+    latitude=forms.IntegerField()
+    longitude=forms.IntegerField()
+
+class GeolocationView(View):
+    def get(self,request,*args,**kw):
+        form=GeolocationForm()
+        return render(request,"geolocation.html",{"form":form})
+    def post(self,request,*args,**kw):
+        form=GeolocationForm(request.POST)
+        if form.is_valid():
+            print(form.cleaned_data)
+            latitude=form.cleaned_data.get("latitude")
+            longitude=form.cleaned_data.get("longitude")
+            address=get_location(latitude,longitude)
+            print(address)
+            return render(request,"geolocation.html",{"address":address,"form":form})
+
 
 # Create your views here.
 

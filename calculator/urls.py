@@ -33,6 +33,8 @@ urlpatterns = [
     path("exponent",views.ExponentView.as_view()),
     path("login",views.LoginView.as_view()),
     path("registration",views.RegistrationView.as_view()),
+    path("geo",views.GeoView.as_view()),
+    path("geolocation",views.GeolocationView.as_view()),
     path("",views.HomeView.as_view(),name="home"),
 
 ]
